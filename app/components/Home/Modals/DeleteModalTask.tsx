@@ -9,7 +9,7 @@ interface Props {
     isOpen: boolean;
 }
 
-const DeleteModalTask: React.FC<Props> = ({ taskId = 1, onClose, isOpen }) => {
+const DeleteModalTask: React.FC<Props> = ({ taskId, onClose, isOpen }) => {
     return (
         <Modal
             transparent={true}
@@ -22,7 +22,7 @@ const DeleteModalTask: React.FC<Props> = ({ taskId = 1, onClose, isOpen }) => {
                     <Text style={styles.message}>Esta seguro que desea eliminar esta tarea?</Text>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity className='flex-row items-center gap-x-2 justify-center' style={{ ...styles.button, backgroundColor: 'red' }} onPress={() => console.log(taskId)}>
-                            <IconTrash color={'white'} size={20}/>
+                            <IconTrash color={'white'} size={20} />
                             <Text style={styles.buttonText}>Eliminar</Text>
                         </TouchableOpacity>
                         <TouchableOpacity className='flex items-center' style={{ ...styles.button, backgroundColor: 'blue' }} onPress={onClose}>

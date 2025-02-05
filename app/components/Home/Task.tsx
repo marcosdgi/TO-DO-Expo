@@ -1,4 +1,5 @@
 import { IconCheck, IconClockHour4, IconList, IconEdit, IconTrash, IconEye } from '@tabler/icons-react-native';
+import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -6,12 +7,19 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import EditModalTask from './Modals/EditModalTask';
 import DeleteModalTask from './Modals/DeleteModalTask';
 import ViewModalTask from './Modals/ViewModalTask';
+import { ITask } from '@/models/task';
 
-const Task = () => {
+interface Props {
+    task: ITask
+}
+
+
+const Task: React.FC<Props> = ({ task }) => {
     const translateX = useSharedValue<number>(0);
     const [editing, setEditing] = useState<boolean>(false)
     const [deleting, setDeleting] = useState<boolean>(false)
     const [viewDetails, setViewDetails] = useState<boolean>(false)
+
     const panGesture = Gesture.Pan()
         .failOffsetY([-2, 2])
         .onTouchesDown(() => {
@@ -64,12 +72,12 @@ const Task = () => {
 
                                 <View className='flex-row items-start justify-start gap-x-2'>
                                     <Text className='font-semibold'>Título:</Text>
-                                    <Text>titulo de prueba</Text>
+                                    <Text>{task.titulo}</Text>
                                 </View>
 
                                 <View className='flex-col mt-2 items-start justify-start'>
                                     <Text className='font-semibold'>Descripción:</Text>
-                                    <Text ellipsizeMode='tail' style={{ width: 200 }} numberOfLines={2}>Descripción de prueba</Text>
+                                    <Text ellipsizeMode='tail' style={{ width: 200 }} numberOfLines={2}>{task.descripcion}</Text>
                                 </View>
 
                             </View>
@@ -77,13 +85,16 @@ const Task = () => {
                             <View className='w-auto'>
 
                                 <View className='flex-row items-center gap-x-2'>
-                                    <Text>12/12/2021</Text>
+                                    <Text>{dayjs(task.createdAt).format('DD/MM/YYYY')}</Text>
                                 </View>
 
                                 <View className='flex-row items-center gap-x-1'>
                                     <Text>Estado:</Text>
-                                    <IconCheck color={'green'} size={20} />
-                                    <IconClockHour4 color={'orange'} size={20} />
+                                    {task.estado ? (
+                                        <IconCheck color={'green'} size={20} />
+                                    ) : (
+                                        <IconClockHour4 color={'orange'} size={20} />
+                                    )}
                                 </View>
 
                             </View>
@@ -93,18 +104,18 @@ const Task = () => {
             </View>
             {/* Modal de edición */}
 
-            <EditModalTask isEditing={editing} onClose={() => {
+            <EditModalTask task={task} isEditing={editing} onClose={() => {
                 setEditing(false)
                 translateX.value = withSpring(0);
             }} />
 
             {/* Modal de confirmacion para la eliminacion */}
-            <DeleteModalTask taskId={1} isOpen={deleting} onClose={() => {
+            <DeleteModalTask taskId={task.id} isOpen={deleting} onClose={() => {
                 setDeleting(false)
                 translateX.value = withSpring(0)
             }} />
             {/* Modal para visualizar detalles de tarea */}
-            <ViewModalTask isOpen={viewDetails} onClose={() => {
+            <ViewModalTask task={task} isOpen={viewDetails} onClose={() => {
                 setViewDetails(false)
                 translateX.value = withSpring(0)
             }} />
@@ -137,7 +148,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     taskContainer: {
-        backgroundColor: '#fff',
         borderRadius: 10,
         overflow: 'hidden',
     },

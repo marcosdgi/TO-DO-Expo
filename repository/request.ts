@@ -1,4 +1,3 @@
-import * as SecureStore from 'expo-secure-store';
 
 /* eslint-disable prettier/prettier */
 export interface RequestError {
@@ -35,14 +34,7 @@ export async function request<TResponse>(
     const data = await response.json();
     return data as TResponse;
   } catch (error) {
-
-    const headers = new Headers(config.headers || {});
-    const token = await SecureStore.getItemAsync('authToken'); // Obtén el token del SecureStore
-    if (token) {
-      headers.set('Authorization', token);
-    }
-
-    const response = await fetch(url, { ...config, headers });
+    const response = await fetch(url, config);
 
     if (!response.ok) {
       let errorMessage = '';

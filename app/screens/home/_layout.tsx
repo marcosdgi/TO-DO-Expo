@@ -35,10 +35,7 @@ const HomeLayout = () => {
                         },
                         headerShadowVisible: false,
                     }} />
-                    <Stack.Screen name='task' options={{
-                        headerShown: false,
-
-                    }} />
+                   
                 </Stack>
             </View>
         </>

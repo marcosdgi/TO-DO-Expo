@@ -1,10 +1,12 @@
 import { Modal, Text, Pressable, View, TextInput, Switch, StyleSheet, TouchableOpacity } from "react-native"
 import React, { useState } from "react"
 import { IconDownload, IconUpload, IconX } from "@tabler/icons-react-native";
+import { ITask } from "@/models/task";
 
 interface Props {
     isEditing: boolean
     onClose: () => void;
+    task:ITask
 }
 
 const EditModalTask: React.FC<Props> = ({ isEditing, onClose }) => {

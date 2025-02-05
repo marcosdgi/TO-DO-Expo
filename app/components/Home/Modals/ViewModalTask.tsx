@@ -1,13 +1,16 @@
+import { ITask } from '@/models/task';
 import { IconX } from '@tabler/icons-react-native';
+import dayjs from 'dayjs';
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
+    task: ITask
 }
 
-const ViewModalTask: React.FC<Props> = ({ isOpen, onClose }) => {
+const ViewModalTask: React.FC<Props> = ({ isOpen, onClose, task }) => {
     return (
         <Modal
             visible={isOpen}
@@ -24,20 +27,20 @@ const ViewModalTask: React.FC<Props> = ({ isOpen, onClose }) => {
                     <View className='flex-col justify-start items-start  w-full gap-y-2'>
                         <View >
                             <Text className='text-xl font-semibold'>Titulo</Text>
-                            <Text className='text-sm'>Titulo</Text>
+                            <Text className='text-sm'>{task.titulo}</Text>
                         </View>
                         <View>
                             <Text className='text-xl font-semibold'>Descripcion</Text>
-                            <Text className='text-sm'>Descripcion</Text>
+                            <Text className='text-sm'>{task.descripcion}</Text>
                         </View>
                         <View>
                             <Text className='text-xl font-semibold'>Estado</Text>
-                            <Text className='text-sm'>Estado</Text>
+                            <Text className='text-sm'>{task.estado ? "Cumplido" : "Pendiente"}</Text>
                         </View>
 
                         <View>
                             <Text className='text-xl font-semibold'>Fecha de creación</Text>
-                            <Text className='text-sm'>15/01/2021</Text>
+                            <Text className='text-sm'>{dayjs(task.createdAt).format('DD/MM/YYYY')}</Text>
                         </View>
                     </View>
 
