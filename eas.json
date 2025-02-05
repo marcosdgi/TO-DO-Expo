@@ -18,6 +18,10 @@
       }
     },
     "production": {
+      "autoIncrement": {
+        "ios": true,
+        "android": true
+      },
       "android": {
         "buildType": "apk"
       }

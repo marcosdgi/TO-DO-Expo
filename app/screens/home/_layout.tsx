@@ -1,35 +1,48 @@
-import { IconListDetails } from '@tabler/icons-react-native';
-import { Stack } from 'expo-router'
+import { IconArrowLeft, IconListDetails, IconNotification } from '@tabler/icons-react-native';
+import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react'
-import { View, Text } from 'react-native'
+import React, { useState } from 'react';
+import { View, Text, Pressable, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const HomeLayout = () => {
     const insets = useSafeAreaInsets();
+    const [haveNotifications, setHaveNotificacions] = useState<boolean>(true);
     return (
         <>
             <StatusBar style='auto' />
             <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom, flex: 1 }}>
                 <Stack>
                     <Stack.Screen name='home' options={{
-                        headerShown: false,
                         headerTitle: () => {
                             return (
-                                <>
-                                    <View>
-                                        <IconListDetails color={'yellow'} size={25}/>
-                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Home</Text>
-                                    </View>
-                                </>
-                            )
+                                <View className='flex-row items-center gap-x-2'>
+                                    <IconListDetails color={'blue'} size={25} />
+                                    <Text className='text-xl font-semibold text-blue-800'>TO-DO</Text>
+                                </View>
+                            );
                         },
                         headerTitleAlign: 'center',
+                        headerRight: () => {
+                            return (
+                                <TouchableOpacity className="relative">
+                                    <IconNotification color={'blue'} />
+                                    {haveNotifications && (
+                                        <View className="absolute top-[1px] right-[1px] bg-red-500 rounded-full w-3 h-3" />
+                                    )}
+                                </TouchableOpacity>
+                            );
+                        },
+                        headerShadowVisible: false,
                     }} />
-                    
+                    <Stack.Screen name='task' options={{
+                        headerShown: false,
+
+                    }} />
                 </Stack>
-            </View >
+            </View>
         </>
-    )
-}
+    );
+};
 
 export default HomeLayout;
