@@ -55,7 +55,7 @@ const Task: React.FC<Props> = ({ task, emitUpdatedTask, emitDeletedTask }) => {
         if (deletedTask) {
             emitDeletedTask(deletedTask)
         }
-        setEditing(false)
+        setDeleting(false)
         translateX.value = withSpring(0);
     }, [])
 

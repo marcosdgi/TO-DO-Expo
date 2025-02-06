@@ -10,7 +10,6 @@ interface Props {
     taskId: number
     onClose: (deletedTask?: ITask) => void;
     isOpen: boolean;
-    // onElimination: (deletedTask: ITask) => void;
 }
 
 const respository = new TaskRepository(process.env.EXPO_PUBLIC_API_URL as string)
@@ -36,6 +35,7 @@ const DeleteModalTask: React.FC<Props> = ({ taskId, onClose, isOpen }) => {
             transparent={true}
             animationType="fade"
             visible={isOpen}
+            onRequestClose={() => onClose()}
         >
             <View style={styles.overlay}>
                 <View style={styles.modalContainer}>

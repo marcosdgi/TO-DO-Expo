@@ -26,11 +26,11 @@ const ViewModalTask: React.FC<Props> = ({ isOpen, onClose, task }) => {
 
                     <View className='flex-col justify-start items-start  w-full gap-y-2'>
                         <View >
-                            <Text className='text-xl font-semibold'>Titulo</Text>
+                            <Text className='text-xl font-semibold'>Título</Text>
                             <Text className='text-sm'>{task.titulo}</Text>
                         </View>
                         <View>
-                            <Text className='text-xl font-semibold'>Descripcion</Text>
+                            <Text className='text-xl font-semibold'>Descripción</Text>
                             <Text className='text-sm'>{task.descripcion}</Text>
                         </View>
                         <View>
