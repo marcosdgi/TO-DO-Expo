@@ -43,8 +43,8 @@ export class TaskRepository {
         })
     }
 
-    async deleteTask(taskId: number): Promise<void> {
-        return request<void>(`${this.baseUrl}/delete/${taskId}`, {
+    async deleteTask(taskId: number): Promise<ITask> {
+        return request<ITask>(`${this.baseUrl}/delete/${taskId}`, {
             method: 'DELETE',
         })
     }

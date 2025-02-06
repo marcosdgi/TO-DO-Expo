@@ -1,90 +1,139 @@
-import { Modal, Text, Pressable, View, TextInput, Switch, StyleSheet, TouchableOpacity } from "react-native"
-import React, { useState } from "react"
-import { IconDownload, IconUpload, IconX } from "@tabler/icons-react-native";
+import { Modal, Text, Pressable, View, TextInput, Switch, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useCallback, useState } from "react";
+import { IconDownload, IconX } from "@tabler/icons-react-native";
 import { ITask } from "@/models/task";
+import { TaskRepository } from "@/repository/task/taskRepository";
+import { TaskService } from "@/services/taskService";
 
 interface Props {
-    isEditing: boolean
-    onClose: () => void;
-    task:ITask
+    isEditing: boolean;
+    onClose: (editedTask?: ITask) => void;
+    task: ITask;
 }
 
-const EditModalTask: React.FC<Props> = ({ isEditing, onClose }) => {
+const repository = new TaskRepository(process.env.EXPO_PUBLIC_API_URL as string)
+const taskService = new TaskService(repository)
 
-    const [estado, setEstado] = useState<boolean>(false)
+const EditModalTask: React.FC<Props> = ({ isEditing, onClose, task }) => {
+    const [taskValues, setTaskValues] = useState<{ titulo: string, descripcion: string, estado: boolean }>({
+        titulo: task.titulo,
+        descripcion: task.descripcion,
+        estado: task.estado
+    });
+    const handleChange = useCallback((key: keyof typeof taskValues, value: string | boolean) => {
+        setTaskValues(prev => ({ ...prev, [key]: value }));
+    }, [taskValues])
+
+    const handleSave = () => {
+        const dataToUpdate = {
+            titulo: taskValues.titulo || task.titulo,
+            descripcion: taskValues.descripcion || task.descripcion,
+            estado: taskValues.estado
+        };
+
+        if (dataToUpdate) {
+            taskService.update(
+                dataToUpdate.titulo,
+                dataToUpdate.descripcion,
+                dataToUpdate.estado,
+                task.id
+            ).then(
+                (data) => {
+                    onClose(data)
+                })
+        }
+
+        onClose();
+    };
 
     return (
-        <Modal
-            visible={isEditing}
-            animationType="fade"
-            transparent={true}
-        >
+        <Modal visible={isEditing} animationType="fade" transparent={true}>
             <View style={styles.overlay}>
                 <View style={styles.modalContainer}>
                     <View style={styles.header}>
                         <Pressable onPress={() => onClose()}>
-                            <IconX color={'gray'} size={20} />
+                            <IconX color="gray" size={20} />
                         </Pressable>
                     </View>
 
-                    <View className="flex-col gap-y-2 mt-3 items-center justify-between" >
-                        <View style={{ borderColor: '#93c5fd', borderWidth: 1 }} className="rounded-md h-10 w-full">
+                    <View className="flex-col gap-y-2 mt-3 items-center justify-between">
+                        <View style={styles.inputContainer}>
                             <TextInput
-                                placeholder="Titulo de la tarea"
-                                className="w-full h-10 p-2 border-1 border-slate-300 rounded-md focus:border-blue-100"
+                                placeholder="Título de la tarea"
+                                className="w-full h-10 p-2 rounded-md"
+                                value={taskValues.titulo}
+                                onChangeText={(text) => handleChange("titulo", text)}
                             />
                         </View>
-                        <View style={{ borderColor: '#93c5fd', borderWidth: 1 }} className="rounded-md h-10 w-full">
+
+                        <View style={styles.inputContainer}>
                             <TextInput
                                 placeholder="Escriba la descripción de su tarea"
-                                multiline
-                                className="w-full h-auto p-2 border-1 border-slate-300  rounded-md focus:border-blue-100"
+                                className="w-full h-auto p-2 rounded-md"
+                                value={taskValues.descripcion}
+                                onChangeText={(text) => handleChange("descripcion", text)}
                             />
                         </View>
+
                         <View className="flex-row gap-x-2 items-center justify-start">
                             <Text>Estado:</Text>
                             <Switch
-                                value={estado}
-                                onChange={() => {
-                                    setEstado(!estado)
-                                }}
+                                value={taskValues.estado}
+                                onValueChange={(value) => handleChange("estado", value)}
                             />
                         </View>
-                        <TouchableOpacity style={{ backgroundColor: '#2563eb' }} className="flex-row w-full p-2 rounded-md  bg-blue-600 items-center gap-x-2 justify-center">
-                            <IconDownload color={'white'} />
-                            <Text style={{ color: 'white' }}>Guardar</Text>
+
+                        <TouchableOpacity
+                            style={styles.saveButton}
+                            onPress={handleSave}
+                        >
+                            <IconDownload color="white" />
+                            <Text style={styles.saveButtonText}>Guardar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-        </Modal >
-    )
-}
+        </Modal>
+    );
+};
 
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
     },
     modalContainer: {
-        width: '80%',
-        backgroundColor: 'white',
+        width: "80%",
+        backgroundColor: "white",
         borderRadius: 10,
         padding: 20,
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
+        flexDirection: "row",
+        justifyContent: "flex-end",
     },
-    content: {
-        marginTop: 10,
-        gap: 10,
-
+    inputContainer: {
+        borderColor: "#93c5fd",
+        borderWidth: 1,
+        borderRadius: 8,
+        width: "100%",
+        paddingHorizontal: 5,
     },
-
-
+    saveButton: {
+        backgroundColor: "#2563eb",
+        flexDirection: "row",
+        width: "100%",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    saveButtonText: {
+        color: "white",
+        marginLeft: 5,
+    },
 });
 
 export default EditModalTask;

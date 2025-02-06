@@ -1,6 +1,6 @@
 import { IconCheck, IconClockHour4, IconList, IconEdit, IconTrash, IconEye } from '@tabler/icons-react-native';
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -11,10 +11,12 @@ import { ITask } from '@/models/task';
 
 interface Props {
     task: ITask
+    emitUpdatedTask: (updatedTask: ITask) => void
+    emitDeletedTask: (deletedTaskId: ITask) => void
 }
 
 
-const Task: React.FC<Props> = ({ task }) => {
+const Task: React.FC<Props> = ({ task, emitUpdatedTask, emitDeletedTask }) => {
     const translateX = useSharedValue<number>(0);
     const [editing, setEditing] = useState<boolean>(false)
     const [deleting, setDeleting] = useState<boolean>(false)
@@ -40,6 +42,24 @@ const Task: React.FC<Props> = ({ task }) => {
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: translateX.value }],
     }));
+    const handleEdit = useCallback((editedTask: ITask | undefined) => {
+        if (editedTask) {
+            emitUpdatedTask(editedTask)
+        }
+        setEditing(false)
+        translateX.value = withSpring(0);
+    }, [])
+
+
+    const handleElimination = useCallback((deletedTask: ITask | undefined) => {
+        if (deletedTask) {
+            emitDeletedTask(deletedTask)
+        }
+        setEditing(false)
+        translateX.value = withSpring(0);
+    }, [])
+
+
 
     return (
         <GestureHandlerRootView>
@@ -67,7 +87,6 @@ const Task: React.FC<Props> = ({ task }) => {
                     <Animated.View style={[styles.taskContainer, animatedStyle]}>
                         <Pressable className='w-full h-32 mt-2 gap-x-2 flex-row items-center justify-between bg-blue-100 p-2 rounded-md'>
                             <IconList color={'gray'} size={30} />
-
                             <View className='flex-col w-[60%] items-start gap-x-2 '>
 
                                 <View className='flex-row items-start justify-start gap-x-2'>
@@ -102,18 +121,16 @@ const Task: React.FC<Props> = ({ task }) => {
                     </Animated.View>
                 </GestureDetector>
             </View>
-            {/* Modal de edición */}
+            {/* Modales */}
 
-            <EditModalTask task={task} isEditing={editing} onClose={() => {
-                setEditing(false)
-                translateX.value = withSpring(0);
-            }} />
+            {/* Modal de edición */}
+            <EditModalTask task={task} isEditing={editing} onClose={handleEdit} />
 
             {/* Modal de confirmacion para la eliminacion */}
-            <DeleteModalTask taskId={task.id} isOpen={deleting} onClose={() => {
-                setDeleting(false)
-                translateX.value = withSpring(0)
-            }} />
+            <DeleteModalTask
+                taskId={task.id}
+                isOpen={deleting}
+                onClose={handleElimination} />
             {/* Modal para visualizar detalles de tarea */}
             <ViewModalTask task={task} isOpen={viewDetails} onClose={() => {
                 setViewDetails(false)

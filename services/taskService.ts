@@ -9,11 +9,19 @@ export class TaskService {
     }
 
     async getTasks(): Promise<ITask[]> {
-        return this.taskRepository.getTasks()
+        return await this.taskRepository.getTasks()
     }
 
     async create(titulo: string, descripcion: string, estado: boolean): Promise<ITask> {
-        return this.taskRepository.createTask(titulo, descripcion, estado)
+        return await this.taskRepository.createTask(titulo, descripcion, estado)
+    }
+
+    async update(titulo: string, descripcion: string, estado: boolean, taskId: number): Promise<ITask> {
+        return await this.taskRepository.updateTask(titulo, descripcion, taskId, estado)
+    }
+
+    async delete(taskId: number): Promise<ITask> {
+        return await this.taskRepository.deleteTask(taskId)
     }
 
 }
